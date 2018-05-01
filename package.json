@@ -1,0 +1,19 @@
+{
+  "name": "schtat",
+  "version": "0.0.0",
+  "description": "Let's manage ze schät",
+  "main": "schtat.js",
+  "author": "Saul van der Walt",
+  "license": "MIT",
+  "scripts": {
+    "test": "./node_modules/.bin/ava ./test.js",
+    "build": "./node_modules/.bin/babel ./schtat.js --out-file ./schtat.es5.js && ./node_modules/.bin/minify ./schtat.js --out-file ./schtat.min.js && ./node_modules/.bin/minify ./schtat.es5.js --out-file ./schtat.es5.min.js && rm ./schtat.es5.js"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.46",
+    "@babel/core": "^7.0.0-beta.46",
+    "@babel/preset-env": "^7.0.0-beta.46",
+    "ava": "^1.0.0-beta.4",
+    "babel-minify": "^0.5.0-alpha.7b176463"
+  }
+}
