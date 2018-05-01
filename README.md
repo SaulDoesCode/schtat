@@ -13,7 +13,9 @@ that can be consumed, mutated, pre-screened, screened and observed at any stage
 or binds which synchronize a state or state view with a property on any object.
 
 ```js
-const counter = schtät({
+import state from 'schat.js'
+
+const counter = state({
   val: 0,
   screen: val => typeof val === 'number' && !isNaN(val) && val % 1 === 0,
   mut (val) {
