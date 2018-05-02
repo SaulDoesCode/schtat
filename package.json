@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "test": "./node_modules/.bin/ava ./test.js",
-    "build": "./node_modules/.bin/babel ./schtat.js --out-file ./schtat.es5.js && ./node_modules/.bin/minify ./schtat.js --out-file ./schtat.min.js && ./node_modules/.bin/minify ./schtat.es5.js --out-file ./schtat.es5.min.js && rm ./schtat.es5.js"
+    "build": "./node_modules/.bin/babel ./schtat.js --out-file ./schtat.es5.js && ./node_modules/.bin/minify ./schtat.js --out-file ./dist/schtat.min.js && ./node_modules/.bin/minify ./schtat.es5.js --out-file ./dist/schtat.es5.min.js && rm ./schtat.es5.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.46",
