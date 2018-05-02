@@ -1,6 +1,8 @@
 # Schtät is a state manager pronounced sh-tate
 NOTE: This is still a WIP, so there may be issues
 
+[![Build Status](https://travis-ci.org/SaulDoesCode/schtat.svg?branch=master)](https://travis-ci.org/SaulDoesCode/schtat)
+
 Schtät is a different approach to state management
 that takes a flow/pipeline approach to mutations,
 which, then get distributed to various bindings.
