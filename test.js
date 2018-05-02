@@ -4,7 +4,7 @@
 */
 
 const test = require('ava')
-const state = require('./schtat.es5.min.js')
+const state = require('./dist/schtat.es5.min.js')
 
 test('state exists and is a function', t => {
   t.is(typeof state, 'function')
