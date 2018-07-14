@@ -2,9 +2,8 @@
   const NodeEnv = typeof global === 'object'
   const root = NodeEnv ? global : typeof window === 'object' && window
 
-  const runAsync = fn =>
-    root.requestIdleCallback ? root.requestIdleCallback(fn)
-      : NodeEnv ? root.setImmediate(fn) : setTimeout(fn, 0)
+  const runAsync = NodeEnv ? root.setImmediate : root.requestIdleCallback
+    ? root.requestIdleCallback : setTimeout
 
   const isPromise = o => typeof o === 'object' && isFunc(o.then)
   const isFunc = o => o instanceof Function
@@ -49,7 +48,9 @@
           }
         }
       },
-      update: runAsync.bind(undefined, () => binder.bound.forEach(bind => bind())),
+      update: runAsync.bind(null, () => {
+        binder.bound.forEach(bind => bind())
+      }),
       clear () {
         binder.bound.forEach(bind => bind.revoke())
         binder.bound.clear()
@@ -60,7 +61,18 @@
     return binder
   }
 
-  const state = ({val, history, maxhistory, pre, prescreen, screen, mutate: mut, fail, views, revoked}) => {
+  const state = ({
+    val,
+    history,
+    maxhistory,
+    pre,
+    prescreen,
+    screen,
+    mutate: mut,
+    fail,
+    views,
+    revoked
+  }) => {
     if (history === true) history = []
     let isRevoked = false
     const Binds = binder()
@@ -88,7 +100,7 @@
         Binds.delete(host, key)
         if (revoke) revoke()
       }
-      Binds.set(host, key, bind, val !== undefined)
+      Binds.set(host, key, bind, val != null)
       return bind
     }
 
@@ -101,14 +113,14 @@
         Binds.delete(input, 'value')
         if (revoke) revoke()
       }
-      Binds.set(input, 'value', bind, val !== undefined)
+      Binds.set(input, 'value', bind, val != null)
       return bind
     }
 
     // direct text node bind for easily displaying
     // a state in the dom
     const text = (viewName, node, revoke) => {
-      if (viewName !== undefined && viewName.appendChild) {
+      if (viewName != null && viewName.appendChild) {
         [node, viewName] = [viewName, undefined]
       }
       const text = new root.Text()
@@ -143,7 +155,7 @@
       views = undefined
     }
 
-    if (screen !== undefined && isRegExp(screen)) {
+    if (screen != null && isRegExp(screen)) {
       const regexp = screen
       screen = val => isStr(val) && regexp.test(val)
     }
@@ -152,7 +164,7 @@
       if (isRevoked || newval === val) return
       if (isFunc(newval)) newval = newval(val)
 
-      if (newval === undefined) {
+      if (newval == null) {
         throw new Error('state.mutate: cannot create mutation from undefined')
       } else if (isFunc(newval)) {
         throw new TypeError('state: cannot accept function values')
@@ -179,7 +191,7 @@
         Binds.update()
         if (history) {
           history.push(val)
-          if (maxhistory !== undefined && history.length > maxhistory) {
+          if (maxhistory != null && history.length > maxhistory) {
             history.shift()
           }
         }
@@ -188,7 +200,7 @@
     }
 
     const manager = define((v, viewName) => {
-      if (v !== undefined) mutate(v)
+      if (v != null) mutate(v)
       return v
     }, {
       bind,
@@ -202,7 +214,7 @@
       revoke () {
         Binds.clear()
         val = undefined
-        viewKeys.forEach(key => { view[key] = undefined })
+        viewKeys.forEach(key => delete view[key])
         viewKeys.clear()
         isRevoked = true
         if (history) history.length = 0
@@ -213,7 +225,7 @@
     return Object.freeze(manager)
   }
 
-  state.collection = states => {
+  state.collection = (states = Object.create(null)) => {
     if (!isObj(states)) {
       throw new Error('stateCollection needs a model object')
     }
@@ -231,13 +243,13 @@
           for (const k in key) {
             if (states[k]) states[k].mutate(key[k])
           }
-        } else if (key !== undefined && val !== undefined) {
+        } else if (key != null && val != null) {
           states[key].mutate(val)
         }
       },
       reactive () {
         const reactive = {}
-        for (let key in states) {
+        for (const key in states) {
           Object.defineProperty(reactive, key, {
             get: () => states[key].view(),
             set: v => states[key].mutate(v)
@@ -249,10 +261,10 @@
   }
 
   state.collection.toObj = coll => {
-    const obj = {}
+    const obj = Object.create(null)
     for (const key in coll) obj[key] = coll[key].view()
     return obj
   }
 
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = state : typeof define === 'function' && define.amd ? define(['state'], () => state) : root.state = state
+  typeof module !== 'undefined' ? module.exports = state : typeof define === 'function' && define.amd ? define(['state'], () => state) : root.state = state
 })()
