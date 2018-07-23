@@ -20,7 +20,7 @@ const counter = state({
   }
 })
 
-test('.mutate()/.view() exists and runs without error', t => {
+test('.mutate/view() exists and runs without error', t => {
   counter.mutate(val => val + 1)
   t.is(counter.view(), 1)
 })

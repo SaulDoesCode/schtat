@@ -5,7 +5,7 @@
   const runAsync = NodeEnv ? root.setImmediate : root.requestIdleCallback
     ? root.requestIdleCallback : setTimeout
 
-  const isPromise = o => typeof o === 'object' && isFunc(o.then)
+  const isPromise = o => o instanceof Promise || (typeof o === 'object' && isFunc(o.then))
   const isFunc = o => o instanceof Function
   const isObj = o => typeof o === 'object' && o.constructor === Object
   const isStr = o => typeof o === 'string'
@@ -167,7 +167,7 @@
       if (newval == null) {
         throw new Error('state.mutate: cannot create mutation from undefined')
       } else if (isFunc(newval)) {
-        throw new TypeError('state: cannot accept function values')
+        throw new TypeError('state: cannot accept nested function values')
       }
 
       if (isPromise(newval)) {
@@ -225,12 +225,13 @@
     return Object.freeze(manager)
   }
 
-  state.collection = (states = Object.create(null)) => {
+  state.collection = (states = {}) => {
+    states = Object.assign(Object.create(null), ...states)
     if (!isObj(states)) {
       throw new Error('stateCollection needs a model object')
     }
 
-    for (let key in states) {
+    for (const key in states) {
       if (isObj(states[key])) {
         states[key] = state(states[key])
       }
